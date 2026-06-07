@@ -402,7 +402,7 @@
 </div>
 
 <script>
-// ━━━ Stats & Counters Logic (Connected to Backend APIs) ━━━
+// ━━━ Stats & Counters Logic ━━━
 function updateStatsUI() {
   fetch('/api/stats')
     .then(res => res.json())
@@ -410,19 +410,19 @@ function updateStatsUI() {
       document.getElementById('statImagesCount').innerText = data.totalImagesRemoved;
       document.getElementById('statLoginsCount').innerText = data.todayLogins;
     })
-    .catch(err => console.error('Error fetching general stats:', err));
+    .catch(err => console.error('Error fetching stats:', err));
 }
 
 function incrementLoginStat() {
   fetch('/api/stats/login', { method: 'POST' })
     .then(() => updateStatsUI())
-    .catch(err => console.error('Error incrementing login stat:', err));
+    .catch(err => console.error('Error incrementing login:', err));
 }
 
 function incrementImageStat() {
   fetch('/api/stats/image', { method: 'POST' })
     .then(() => updateStatsUI())
-    .catch(err => console.error('Error incrementing image stat:', err));
+    .catch(err => console.error('Error incrementing image:', err));
 }
 
 // ━━━ Navigation & Sidebar Logic ━━━
