@@ -1,12 +1,11 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 const statsFilePath = path.join(__dirname, 'stats.json');
 
-// دالة قراءة الإحصائيات المشتركة من السيرفر
+// دالة لقراءة الإحصائيات العامة من السيرفر
 function readStats() {
     try {
         if (!fs.existsSync(statsFilePath)) {
@@ -15,7 +14,7 @@ function readStats() {
         const data = fs.readFileSync(statsFilePath, 'utf8');
         let stats = JSON.parse(data);
         
-        // تصفير عداد اليوم التلقائي إذا تغير التاريخ
+        // تصفير عداد اليوم إذا تغير التاريخ
         const today = new Date().toDateString();
         if (stats.lastResetDate !== today) {
             stats.todayLogins = 0;
@@ -28,22 +27,25 @@ function readStats() {
     }
 }
 
-// دالة حفظ الإحصائيات
+// دالة لحفظ الإحصائيات
 function saveStats(stats) {
     fs.writeFileSync(statsFilePath, JSON.stringify(stats, null, 2), 'utf8');
 }
 
+// تفعيل استقبال بيانات JSON في السيرفر
 app.use(express.json());
 
-// تمكين قراءة الملفات الثابتة من مجلد public
-app.use(express.static(path.join(__dirname, 'public')));
+// تمكين قراءة الملفات من المجلد الرئيسي (إذا كان لديك ملفات css أو صور خارجية)
+app.use(express.static(__dirname));
 
-// حل مشكلة (Cannot GET /): توجيه السيرفر لعرض ملف index.html مباشرة عند فتح الرابط الأساسي
+// عرض صفحتك الأساسية عند فتح الموقع
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-// الـ APIs الخاصة بلوحة التحكم بالإحصائيات العامة للكل
+// ━━━ APIs الإحصائيات العامة والمنفصلة لجميع الزوار ━━━
+
+// API جلب الأرقام الحالية للكل
 app.get('/api/stats', (req, res) => {
     const stats = readStats();
     res.json({
@@ -52,6 +54,7 @@ app.get('/api/stats', (req, res) => {
     });
 });
 
+// API زيادة عداد الدخول اليومي
 app.post('/api/stats/login', (req, res) => {
     let stats = readStats();
     stats.todayLogins++;
@@ -59,6 +62,7 @@ app.post('/api/stats/login', (req, res) => {
     res.json({ success: true, todayLogins: stats.todayLogins });
 });
 
+// API زيادة عداد الصور المحذوفة خلفيتها
 app.post('/api/stats/image', (req, res) => {
     let stats = readStats();
     stats.totalImagesRemoved++;
@@ -66,6 +70,6 @@ app.post('/api/stats/image', (req, res) => {
     res.json({ success: true, totalImagesRemoved: stats.totalImagesRemoved });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running successfully on port ${PORT}`);
+app.listen(process.env.PORT || 3000, () => {
+    console.log("Server is running successfully!");
 });
