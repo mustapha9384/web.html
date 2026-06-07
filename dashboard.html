@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منصة مزيل الخلفية الذكية</title>
+<title>Ashes — منصة مزيل الخلفية الذكية</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -265,6 +265,26 @@
   .stat-value { font-size: 28px; font-weight: 900; color: var(--text); }
   .stat-label { font-size: 14px; color: var(--muted); font-weight: 700; }
 
+  /* ━━━ Credits Card Custom Box ━━━ */
+  .credits-card {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    margin-top: 24px;
+    box-shadow: var(--shadow);
+    border: 1px dashed var(--accent);
+    text-align: center;
+    width: 100%;
+  }
+  .credits-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .credits-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: white; background: #5865F2; padding: 10px 18px;
+    border-radius: 10px; text-decoration: none; font-size: 14px;
+    font-weight: 700; margin-top: 8px; transition: all 0.2s;
+  }
+  .credits-link:hover { background: #4752c4; transform: translateY(-1px); }
+
   @media(max-width:600px) {
     .compare-wrap { grid-template-columns: 1fr; }
     .app-header h1 { font-size: 24px; }
@@ -282,7 +302,7 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
 <div class="sidebar" id="sidebar">
   <div class="sidebar-header">
-    <h2>القوائم والتحكم</h2>
+    <h2>Ashes — التحكم</h2>
     <span class="close-sidebar" onclick="toggleSidebar(false)">✕</span>
   </div>
   <div class="menu-section-title">الخدمات</div>
@@ -293,7 +313,7 @@
 <div id="captchaScreen">
   <div class="captcha-card">
     <div class="captcha-logo">✂️</div>
-    <h1>مزيل الخلفية</h1>
+    <h1>Ashes</h1>
     <p>تحقق من أنك لست روبوتاً للمتابعة</p>
 
     <div class="captcha-box" id="captchaBox" onclick="startCaptcha()">
@@ -318,8 +338,8 @@
 <div id="bgRemoverPage" class="app-page active">
   <div class="app-header">
     <div class="app-logo">✂️</div>
-    <h1>مزيل الخلفية</h1>
-    <p>احذف خلفية أي صورة في ثوانٍ — مجاناً</p>
+    <h1>منصة Ashes</h1>
+    <p>احذف خلفية أي صورة في ثوانٍ بكفاءة عالية</p>
   </div>
 
   <div class="upload-area" id="uploadArea"
@@ -358,13 +378,20 @@
       <button class="btn-again" onclick="resetApp()">🔄 صورة جديدة</button>
     </div>
   </div>
+
+  <div class="credits-card">
+    <div class="credits-title">🛠️ تم التطوير من قبل <strong>الجاسوس (el_8e)</strong></div>
+    <a href="https://discord.gg/rmdd" target="_blank" class="credits-link">
+      <span>💬 التواصل عبر ديسكورد</span>
+    </a>
+  </div>
 </div>
 
 <div id="statsPage" class="app-page">
   <div class="app-header">
     <div class="app-logo">📊</div>
-    <h1>إحصائيات المنصة العامة</h1>
-    <p>لوحة التحكم المشتركة لأداء الموقع لجميع الزوار</p>
+    <h1>إحصائيات Ashes العامة</h1>
+    <p>لوحة التحكم للأداء الإجمالي لجميع زوار موقع Ashes</p>
   </div>
   
   <div class="stats-grid">
@@ -379,10 +406,16 @@
       <div class="stat-label">تسجيلات الدخول للموقع اليوم</div>
     </div>
   </div>
+
+  <div class="credits-card">
+    <div class="credits-title">🛠️ تم التطوير من قبل <strong>الجاسوس (el_8e)</strong></div>
+    <a href="https://discord.gg/rmdd" target="_blank" class="credits-link">
+      <span>💬 التواصل عبر ديسكورد</span>
+    </a>
+  </div>
 </div>
 
 <script>
-// المفتاح مدمج تلقائياً ولا يظهر للمستخدم
 const apiKey = "mBgPUXxyaB9aSA1fXokUe1cc";
 
 // ━━━ Stats & Counters Logic ━━━
@@ -529,20 +562,21 @@ function handleFile(file) {
     document.getElementById('processing').style.display = 'none';
     document.getElementById('uploadArea').style.display = 'block';
     if (err.message === '402') {
-      alert('❌ انتهى رصيد الـ API — اشترِ رصيداً من remove.bg');
+      alert('❌ انتهى رصيد الـ API الخاص بـ Ashes');
     } else if (err.message === '403') {
-      alert('❌ مفتاح الـ API مفقود أو غير صحيح');
+      alert('❌ خطأ في مفتاح الـ API المدمج');
     } else {
       alert('❌ حدث خطأ: ' + err.message);
     }
   });
 }
 
+// تعديل اسم ملف التحميل النهائي ليحمل الهوية الاحترافية لـ Ashes
 function downloadResult() {
   if (!resultBlob) return;
   const a = document.createElement('a');
   a.href = URL.createObjectURL(resultBlob);
-  a.download = 'removed_bg.png';
+  a.download = 'ashes-result.png';
   a.click();
 }
 
