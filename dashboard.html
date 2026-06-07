@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مزيل الخلفية</title>
+<title>منصة مزيل الخلفية الذكية</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -44,6 +44,74 @@
   .blob1 { width:500px; height:500px; background:#6366f1; top:-100px; right:-100px; }
   .blob2 { width:400px; height:400px; background:#ec4899; bottom:-100px; left:-100px; }
 
+  /* ━━━ Sidebar Menu ━━━ */
+  .menu-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    z-index: 99;
+    display: none; /* يظهر بعد تخطي الكباتشا */
+    transition: all 0.3s;
+  }
+  .menu-btn:hover { transform: scale(1.05); color: var(--accent); }
+
+  .sidebar {
+    position: fixed;
+    top: 0; right: -280px;
+    width: 280px; height: 100%;
+    background: white;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+    z-index: 200;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .sidebar.open { right: 0; }
+
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
+  }
+  .sidebar-header h2 { font-size: 18px; font-weight: 900; color: var(--text); }
+  .close-sidebar { font-size: 22px; cursor: pointer; color: var(--muted); }
+
+  .menu-section-title {
+    font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-top: 10px;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    text-align: right;
+    transition: all 0.2s;
+  }
+  .menu-item:hover, .menu-item.active { background: #f5f3ff; color: var(--accent); }
+
+  .sidebar-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.2); z-index: 199; display: none;
+  }
+
   /* Captcha Screen */
   #captchaScreen {
     position: fixed; inset: 0;
@@ -76,292 +144,133 @@
     box-shadow: 0 8px 25px rgba(99,102,241,0.35);
   }
 
-  .captcha-card h1 {
-    font-size: 22px; font-weight: 900; color: var(--text);
-    margin-bottom: 6px;
-  }
-
-  .captcha-card p {
-    font-size: 13px; color: var(--muted);
-    margin-bottom: 28px; line-height: 1.6;
-  }
+  .captcha-card h1 { font-size: 22px; font-weight: 900; color: var(--text); margin-bottom: 6px; }
+  .captcha-card p { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
 
   /* Captcha Box */
   .captcha-box {
     border: 2px solid var(--border);
     border-radius: 14px;
     padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-bottom: 20px;
-    background: #fafafa;
-    user-select: none;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; transition: all 0.3s; margin-bottom: 20px;
+    background: #fafafa; user-select: none;
   }
-
-  .captcha-box:hover { border-color: var(--accent); background: #f5f3ff; }
-  .captcha-box.checking { border-color: var(--accent); background: #f5f3ff; }
+  .captcha-box:hover, .captcha-box.checking { border-color: var(--accent); background: #f5f3ff; }
   .captcha-box.done { border-color: #10b981; background: #f0fdf4; }
 
   .captcha-checkbox {
-    width: 28px; height: 28px;
-    border: 2px solid #d1d5db;
-    border-radius: 6px;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
+    width: 28px; height: 28px; border: 2px solid #d1d5db; border-radius: 6px;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; position: relative; overflow: hidden;
   }
+  .captcha-box.checking .captcha-checkbox { border-color: var(--accent); }
+  .captcha-box.done .captcha-checkbox { background: #10b981; border-color: #10b981; }
+  .captcha-box.done .captcha-checkbox::after { content: '✓'; color: white; font-size: 16px; font-weight: 900; }
 
-  .captcha-box.checking .captcha-checkbox {
-    border-color: var(--accent);
-  }
-
-  .captcha-box.done .captcha-checkbox {
-    background: #10b981;
-    border-color: #10b981;
-  }
-
-  .captcha-box.done .captcha-checkbox::after {
-    content: '✓';
-    color: white;
-    font-size: 16px;
-    font-weight: 900;
-  }
-
-  /* Spinner inside checkbox */
   .cb-spinner {
-    width: 16px; height: 16px;
-    border: 2px solid #e5e7eb;
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    display: none;
+    width: 16px; height: 16px; border: 2px solid #e5e7eb; border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.6s linear infinite; display: none;
   }
-
   .captcha-box.checking .cb-spinner { display: block; }
-  .captcha-box.done .cb-spinner { display: none; }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .captcha-label {
-    font-size: 15px; font-weight: 600; color: var(--text); flex: 1; text-align: right;
-  }
-
-  .captcha-brand {
-    font-size: 11px; color: var(--muted);
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
+  .captcha-label { font-size: 15px; font-weight: 600; color: var(--text); flex: 1; text-align: right; }
+  .captcha-brand { font-size: 11px; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
 
   .btn-enter {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 16px;
-    display: none;
-    transition: all 0.3s;
-    box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+    width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; border-radius: 12px; font-family: 'Tajawal', sans-serif;
+    font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px;
+    display: none; transition: all 0.3s; box-shadow: 0 6px 20px rgba(99,102,241,0.4);
   }
-
   .btn-enter:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(99,102,241,0.5); }
   .btn-enter.visible { display: block; animation: fadeUp 0.4s ease; }
 
   @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-  /* ━━━ Main App ━━━ */
-  #mainApp {
-    display: none;
-    width: 100%;
-    max-width: 800px;
-    position: relative;
-    z-index: 1;
-    animation: fadeUp 0.5s ease;
-  }
+  /* App containers */
+  .app-page { display: none; width: 100%; max-width: 800px; position: relative; z-index: 1; animation: fadeUp 0.5s ease; }
+  .app-page.active { display: block; }
 
-  .app-header {
-    text-align: center;
-    margin-bottom: 36px;
-  }
-
+  .app-header { text-align: center; margin-bottom: 36px; }
   .app-logo {
-    width: 72px; height: 72px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 22px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 34px;
-    margin: 0 auto 16px;
-    box-shadow: 0 12px 35px rgba(99,102,241,0.35);
+    width: 72px; height: 72px; background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 22px; display: flex; align-items: center; justify-content: center;
+    font-size: 34px; margin: 0 auto 16px; box-shadow: 0 12px 35px rgba(99,102,241,0.35);
   }
-
   .app-header h1 { font-size: 32px; font-weight: 900; color: var(--text); }
   .app-header p { font-size: 15px; color: var(--muted); margin-top: 6px; }
 
   /* Upload Area */
   .upload-area {
-    background: white;
-    border: 2.5px dashed #c7d2fe;
-    border-radius: 24px;
-    padding: 50px 30px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    margin-bottom: 24px;
+    background: white; border: 2.5px dashed #c7d2fe; border-radius: 24px;
+    padding: 50px 30px; text-align: center; cursor: pointer; transition: all 0.3s;
+    position: relative; margin-bottom: 24px;
   }
-
   .upload-area:hover, .upload-area.drag { border-color: var(--accent); background: #f5f3ff; }
-
   .upload-icon { font-size: 52px; margin-bottom: 14px; }
   .upload-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
   .upload-sub { font-size: 13px; color: var(--muted); }
-
   .upload-btn {
-    display: inline-block;
-    margin-top: 18px;
-    padding: 12px 28px;
+    display: inline-block; margin-top: 18px; padding: 12px 28px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(99,102,241,0.35);
-    transition: all 0.2s;
+    color: white; border-radius: 12px; font-size: 15px; font-weight: 700;
+    cursor: pointer; box-shadow: 0 6px 20px rgba(99,102,241,0.35); transition: all 0.2s;
   }
-
   .upload-btn:hover { transform: translateY(-2px); }
-
   input[type=file] { display: none; }
 
   /* Processing */
   .processing {
-    display: none;
-    text-align: center;
-    padding: 40px;
-    background: white;
-    border-radius: 24px;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow);
+    display: none; text-align: center; padding: 40px; background: white;
+    border-radius: 24px; margin-bottom: 24px; box-shadow: var(--shadow);
   }
-
   .process-spinner {
-    width: 60px; height: 60px;
-    border: 4px solid #e5e7eb;
-    border-top-color: var(--accent);
-    border-right-color: var(--accent2);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 20px;
+    width: 60px; height: 60px; border: 4px solid #e5e7eb; border-top-color: var(--accent);
+    border-right-color: var(--accent2); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px;
   }
-
   .process-title { font-size: 18px; font-weight: 700; color: var(--text); }
   .process-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
 
-  /* Progress bar */
-  .progress-wrap {
-    width: 100%; background: #e5e7eb; border-radius: 10px;
-    height: 8px; margin-top: 20px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 10px;
-    width: 0%;
-    transition: width 0.3s ease;
-  }
+  .progress-wrap { width: 100%; background: #e5e7eb; border-radius: 10px; height: 8px; margin-top: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 10px; width: 0%; transition: width 0.3s ease; }
 
   /* Result */
-  .result-area {
-    display: none;
-    background: white;
-    border-radius: 24px;
-    padding: 28px;
-    box-shadow: var(--shadow);
-    margin-bottom: 24px;
-  }
-
-  .result-title {
-    font-size: 18px; font-weight: 700; color: var(--text);
-    margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
-  }
-
-  .compare-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
+  .result-area { display: none; background: white; border-radius: 24px; padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+  .result-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
   .img-box { border-radius: 14px; overflow: hidden; position: relative; }
-  .img-box label {
-    display: block;
-    font-size: 12px; font-weight: 700; color: var(--muted);
-    margin-bottom: 8px; text-align: center;
-  }
+  .img-box label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px; text-align: center; }
+  .img-box img { width: 100%; border-radius: 10px; border: 1px solid var(--border); display: block; }
 
-  .img-box img {
-    width: 100%; border-radius: 10px;
-    border: 1px solid var(--border);
-    display: block;
-  }
-
-  /* Checkerboard for transparent */
   .transparent-bg {
-    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
-      linear-gradient(-45deg, #ccc 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #ccc 75%),
-      linear-gradient(-45deg, transparent 75%, #ccc 75%);
-    background-size: 16px 16px;
-    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0px; border-radius: 10px; border: 1px solid var(--border);
   }
 
   .result-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-
-  .btn-download {
-    flex: 1;
-    padding: 14px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 15px; font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(99,102,241,0.35);
-    transition: all 0.2s;
-  }
-
+  .btn-download { flex: 1; padding: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; border: none; border-radius: 12px; font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px rgba(99,102,241,0.35); transition: all 0.2s; }
   .btn-download:hover { transform: translateY(-2px); }
-
-  .btn-again {
-    padding: 14px 24px;
-    background: white;
-    color: var(--accent);
-    border: 2px solid var(--accent);
-    border-radius: 12px;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 15px; font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
+  .btn-again { padding: 14px 24px; background: white; color: var(--accent); border: 2px solid var(--accent); border-radius: 12px; font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
   .btn-again:hover { background: #f5f3ff; }
+
+  /* Stats Dashboard Grid */
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;
+  }
+  .stat-card {
+    background: white; border-radius: 20px; padding: 24px; text-align: center; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 8px; border: 1px solid rgba(99,102,241,0.05);
+  }
+  .stat-icon { font-size: 36px; }
+  .stat-value { font-size: 28px; font-weight: 900; color: var(--text); }
+  .stat-label { font-size: 14px; color: var(--muted); font-weight: 700; }
 
   @media(max-width:600px) {
     .compare-wrap { grid-template-columns: 1fr; }
     .app-header h1 { font-size: 24px; }
+    .stats-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -369,6 +278,19 @@
 
 <div class="blob blob1"></div>
 <div class="blob blob2"></div>
+
+<button class="menu-btn" id="menuBtn" onclick="toggleSidebar(true)">☰ القوائم</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>القوائم والتحكم</h2>
+    <span class="close-sidebar" onclick="toggleSidebar(false)">✕</span>
+  </div>
+  <div class="menu-section-title">الخدمات</div>
+  <button class="menu-item active" id="btnPageBg" onclick="switchPage('bgRemoverPage', 'btnPageBg')">✂️ إزالة الخلفية</button>
+  <button class="menu-item" id="btnPageStats" onclick="switchPage('statsPage', 'btnPageStats')">📊 إحصائيات الموقع</button>
+</div>
 
 <div id="captchaScreen">
   <div class="captcha-card">
@@ -395,7 +317,7 @@
   </div>
 </div>
 
-<div id="mainApp">
+<div id="bgRemoverPage" class="app-page active">
   <div class="app-header">
     <div class="app-logo">✂️</div>
     <h1>مزيل الخلفية</h1>
@@ -440,9 +362,87 @@
   </div>
 </div>
 
+<div id="statsPage" class="app-page">
+  <div class="app-header">
+    <div class="app-logo">📊</div>
+    <h1>إحصائيات المنصة</h1>
+    <p>لوحة التحكم في الوقت الفعلي لأداء الموقع</p>
+  </div>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">✨</div>
+      <div class="stat-value" id="statImagesCount">0</div>
+      <div class="stat-label">خلفيات انشالت إجمالاً</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🚀</div>
+      <div class="stat-value" id="statLoginsCount">0</div>
+      <div class="stat-label">تسجيلات الدخول للموقع اليوم</div>
+    </div>
+  </div>
+</div>
+
 <script>
-// ━━━ Captcha Logic ━━━
+// ━━━ Stats & Counters Logic ━━━
+let totalImagesRemoved = parseInt(localStorage.getItem('total_images_removed')) || 0;
+let todayLogins = parseInt(localStorage.getItem('today_logins')) || 0;
+
+function updateStatsUI() {
+  document.getElementById('statImagesCount').innerText = totalImagesRemoved;
+  document.getElementById('statLoginsCount').innerText = todayLogins;
+}
+
+function incrementLoginStat() {
+  todayLogins++;
+  localStorage.setItem('today_logins', todayLogins);
+  updateStatsUI();
+}
+
+function incrementImageStat() {
+  totalImagesRemoved++;
+  localStorage.setItem('total_images_removed', totalImagesRemoved);
+  updateStatsUI();
+}
+
+// ━━━ Navigation & Sidebar Logic ━━━
+function toggleSidebar(open) {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if(open) {
+    sidebar.classList.add('open');
+    overlay.style.display = 'block';
+  } else {
+    sidebar.classList.remove('open');
+    overlay.style.display = 'none';
+  }
+}
+
+function switchPage(pageId, btnId) {
+  document.querySelectorAll('.app-page').forEach(page => page.classList.remove('active'));
+  document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
+  
+  document.getElementById(pageId).classList.add('active');
+  document.getElementById(btnId).classList.add('active');
+  
+  toggleSidebar(false);
+}
+
+// ━━━ Captcha Logic with 5-Hour Expiry ━━━
 let captchaDone = false;
+
+// فحص حالة الكباتشا والـ 5 ساعات تلقائياً فور تحميل الصفحة
+window.addEventListener('DOMContentLoaded', () => {
+  const captchaExpiry = localStorage.getItem('captcha_expiry');
+  const currentTime = new Date().getTime();
+
+  if (captchaExpiry && currentTime < parseInt(captchaExpiry)) {
+    // إذا لم تنته الـ 5 ساعات يتخطى شاشة الكباتشا فوراً ويظهر القائمة
+    document.getElementById('captchaScreen').style.display = 'none';
+    document.getElementById('menuBtn').style.display = 'block';
+    updateStatsUI();
+  }
+});
 
 function startCaptcha() {
   if (captchaDone) return;
@@ -458,49 +458,43 @@ function startCaptcha() {
 
 function enterApp() {
   if (!captchaDone) return;
+  
+  // حفظ وقت انتهاء الصلاحية في المتصفح (الوقت الحالي + 5 ساعات)
+  const fiveHoursInMillis = 5 * 60 * 60 * 1000;
+  const expiryTime = new Date().getTime() + fiveHoursInMillis;
+  localStorage.setItem('captcha_expiry', expiryTime);
+
   document.getElementById('captchaScreen').style.animation = 'fadeOut 0.4s ease forwards';
   setTimeout(() => {
     document.getElementById('captchaScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('menuBtn').style.display = 'block'; 
+    incrementLoginStat(); 
+    updateStatsUI();
   }, 400);
 }
 
-// ━━━ Upload Logic ━━━
-function handleDragOver(e) {
-  e.preventDefault();
-  document.getElementById('uploadArea').classList.add('drag');
-}
-
-function handleDragLeave() {
-  document.getElementById('uploadArea').classList.remove('drag');
-}
-
+// ━━━ Upload & API Logic ━━━
+function handleDragOver(e) { e.preventDefault(); document.getElementById('uploadArea').classList.add('drag'); }
+function handleDragLeave() { document.getElementById('uploadArea').classList.remove('drag'); }
 function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('uploadArea').classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) handleFile(file);
+  e.preventDefault(); document.getElementById('uploadArea').classList.remove('drag');
+  const file = e.dataTransfer.files[0]; if (file && file.type.startsWith('image/')) handleFile(file);
 }
 
 let resultBlob = null;
-
-// تم دمج الـ API Key الخاص بك هنا مباشرة
-const apiKey = "mBgPUXxyaB9aSA1fXokUe1cc";
+const apiKey = "mBgPUXxyaB9aSA1fXokUe1cc"; 
 
 function handleFile(file) {
   if (!file) return;
 
-  // Show original preview
   const reader = new FileReader();
   reader.onload = e => document.getElementById('originalImg').src = e.target.result;
   reader.readAsDataURL(file);
 
-  // Show processing
   document.getElementById('uploadArea').style.display = 'none';
   document.getElementById('processing').style.display = 'block';
   document.getElementById('resultArea').style.display = 'none';
 
-  // Animate progress
   let progress = 0;
   const progressFill = document.getElementById('progressFill');
   const interval = setInterval(() => {
@@ -508,7 +502,6 @@ function handleFile(file) {
     progressFill.style.width = progress + '%';
   }, 300);
 
-  // Call remove.bg API
   const formData = new FormData();
   formData.append('image_file', file);
   formData.append('size', 'auto');
@@ -518,16 +511,16 @@ function handleFile(file) {
     headers: { 'X-Api-Key': apiKey },
     body: formData
   })
-  .then(res => {
-    if (!res.ok) throw new Error(res.status);
-    return res.blob();
-  })
+  .then(res => { if (!res.ok) throw new Error(res.status); return res.blob(); })
   .then(blob => {
     clearInterval(interval);
     progressFill.style.width = '100%';
     resultBlob = blob;
     const url = URL.createObjectURL(blob);
     document.getElementById('resultImg').src = url;
+    
+    incrementImageStat(); // زيادة العداد فور نجاح العملية
+
     setTimeout(() => {
       document.getElementById('processing').style.display = 'none';
       document.getElementById('resultArea').style.display = 'block';
@@ -537,13 +530,7 @@ function handleFile(file) {
     clearInterval(interval);
     document.getElementById('processing').style.display = 'none';
     document.getElementById('uploadArea').style.display = 'block';
-    if (err.message === '402') {
-      alert('❌ انتهى رصيد الـ API — اشترِ رصيداً من remove.bg');
-    } else if (err.message === '403') {
-      alert('❌ API Key غير صحيح أو تم إلغاؤه');
-    } else {
-      alert('❌ حدث خطأ: ' + err.message);
-    }
+    alert('❌ حدث خطأ أثناء إزالة الخلفية: ' + err.message);
   });
 }
 
@@ -563,10 +550,11 @@ function resetApp() {
   document.getElementById('progressFill').style.width = '0%';
 }
 
-// Captcha fadeout animation
 const style = document.createElement('style');
 style.textContent = '@keyframes fadeOut{to{opacity:0;transform:scale(0.97)}}';
 document.head.appendChild(style);
+
+updateStatsUI();
 </script>
 </body>
 </html>
