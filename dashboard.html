@@ -365,8 +365,8 @@
 <div id="statsPage" class="app-page">
   <div class="app-header">
     <div class="app-logo">📊</div>
-    <h1>إحصائيات المنصة</h1>
-    <p>لوحة التحكم في الوقت الفعلي لأداء الموقع</p>
+    <h1>إحصائيات المنصة العامة</h1>
+    <p>لوحة التحكم في الوقت الفعلي لأداء الموقع عند كل الزوار</p>
   </div>
   
   <div class="stats-grid">
@@ -384,25 +384,28 @@
 </div>
 
 <script>
-// ━━━ Stats & Counters Logic ━━━
-let totalImagesRemoved = parseInt(localStorage.getItem('total_images_removed')) || 0;
-let todayLogins = parseInt(localStorage.getItem('today_logins')) || 0;
+// ━━━ Stats & Counters Logic (تتصل مباشرة بـ APIs السيرفر الموحدة) ━━━
 
 function updateStatsUI() {
-  document.getElementById('statImagesCount').innerText = totalImagesRemoved;
-  document.getElementById('statLoginsCount').innerText = todayLogins;
+  fetch('/api/stats')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('statImagesCount').innerText = data.totalImagesRemoved;
+      document.getElementById('statLoginsCount').innerText = data.todayLogins;
+    })
+    .catch(err => console.error('Error fetching general stats:', err));
 }
 
 function incrementLoginStat() {
-  todayLogins++;
-  localStorage.setItem('today_logins', todayLogins);
-  updateStatsUI();
+  fetch('/api/stats/login', { method: 'POST' })
+    .then(() => updateStatsUI())
+    .catch(err => console.error('Error incrementing login stat:', err));
 }
 
 function incrementImageStat() {
-  totalImagesRemoved++;
-  localStorage.setItem('total_images_removed', totalImagesRemoved);
-  updateStatsUI();
+  fetch('/api/stats/image', { method: 'POST' })
+    .then(() => updateStatsUI())
+    .catch(err => console.error('Error incrementing image stat:', err));
 }
 
 // ━━━ Navigation & Sidebar Logic ━━━
@@ -428,16 +431,15 @@ function switchPage(pageId, btnId) {
   toggleSidebar(false);
 }
 
-// ━━━ Captcha Logic with 5-Hour Expiry ━━━
+// ━━━ Captcha Logic with Local 5-Hour Expiry ━━━
 let captchaDone = false;
 
-// فحص حالة الكباتشا والـ 5 ساعات تلقائياً فور تحميل الصفحة
+// فحص مؤقت الـ 5 ساعات لتخطي الكباتشا تلقائياً عند الريفرش
 window.addEventListener('DOMContentLoaded', () => {
   const captchaExpiry = localStorage.getItem('captcha_expiry');
   const currentTime = new Date().getTime();
 
   if (captchaExpiry && currentTime < parseInt(captchaExpiry)) {
-    // إذا لم تنته الـ 5 ساعات يتخطى شاشة الكباتشا فوراً ويظهر القائمة
     document.getElementById('captchaScreen').style.display = 'none';
     document.getElementById('menuBtn').style.display = 'block';
     updateStatsUI();
@@ -459,7 +461,7 @@ function startCaptcha() {
 function enterApp() {
   if (!captchaDone) return;
   
-  // حفظ وقت انتهاء الصلاحية في المتصفح (الوقت الحالي + 5 ساعات)
+  // حفظ وقت تخطي الكباتشا (الآن + 5 ساعات) في متصفح المستخدم الحالي
   const fiveHoursInMillis = 5 * 60 * 60 * 1000;
   const expiryTime = new Date().getTime() + fiveHoursInMillis;
   localStorage.setItem('captcha_expiry', expiryTime);
@@ -468,12 +470,11 @@ function enterApp() {
   setTimeout(() => {
     document.getElementById('captchaScreen').style.display = 'none';
     document.getElementById('menuBtn').style.display = 'block'; 
-    incrementLoginStat(); 
-    updateStatsUI();
+    incrementLoginStat(); // إرسال طلب احتساب الزيارة اليومية العامة في السيرفر
   }, 400);
 }
 
-// ━━━ Upload & API Logic ━━━
+// ━━━ Upload & remove.bg API Logic ━━━
 function handleDragOver(e) { e.preventDefault(); document.getElementById('uploadArea').classList.add('drag'); }
 function handleDragLeave() { document.getElementById('uploadArea').classList.remove('drag'); }
 function handleDrop(e) {
@@ -482,7 +483,7 @@ function handleDrop(e) {
 }
 
 let resultBlob = null;
-const apiKey = "mBgPUXxyaB9aSA1fXokUe1cc"; 
+const apiKey = "mBgPUXxyaB9aSA1fXokUe1cc"; // مفتاح الـ API الخاص بك
 
 function handleFile(file) {
   if (!file) return;
@@ -519,7 +520,7 @@ function handleFile(file) {
     const url = URL.createObjectURL(blob);
     document.getElementById('resultImg').src = url;
     
-    incrementImageStat(); // زيادة العداد فور نجاح العملية
+    incrementImageStat(); // إرسال طلب زيادة عداد الصور العام والمشترك للجميع بالسيرفر
 
     setTimeout(() => {
       document.getElementById('processing').style.display = 'none';
@@ -554,6 +555,7 @@ const style = document.createElement('style');
 style.textContent = '@keyframes fadeOut{to{opacity:0;transform:scale(0.97)}}';
 document.head.appendChild(style);
 
+// جلب الإحصائيات العامة المحدثة فور تشغيل الصفحة
 updateStatsUI();
 </script>
 </body>
