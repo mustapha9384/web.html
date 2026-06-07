@@ -57,7 +57,7 @@
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     z-index: 99;
-    display: none; /* يظهر بعد تخطي الكباتشا */
+    display: none; 
     transition: all 0.3s;
   }
   .menu-btn:hover { transform: scale(1.05); color: var(--accent); }
@@ -202,12 +202,6 @@
   .app-header h1 { font-size: 32px; font-weight: 900; color: var(--text); }
   .app-header p { font-size: 15px; color: var(--muted); margin-top: 6px; }
 
-  /* Notice */
-  .notice {
-    background: #fef3c7; border: 1px solid #fcd34d; border-radius: 12px;
-    padding: 14px 18px; font-size: 13px; color: #92400e; margin-bottom: 20px; line-height: 1.6;
-  }
-
   /* Upload Area */
   .upload-area {
     background: white; border: 2.5px dashed #c7d2fe; border-radius: 24px;
@@ -328,20 +322,6 @@
     <p>احذف خلفية أي صورة في ثوانٍ — مجاناً</p>
   </div>
 
-  <div class="notice">
-    ⚡ يستخدم الموقع <strong>remove.bg API</strong> — احصل على مفتاح مجاني من
-    <a href="https://www.remove.bg/api" target="_blank" style="color:var(--accent);text-decoration:none">remove.bg</a>
-    ثم ادخله أدناه
-  </div>
-
-  <div style="background:white;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center">
-    <input type="password" id="apiKeyInput" placeholder="أدخل API Key من remove.bg"
-      style="flex:1;background:#f9fafb;border:1.5px solid var(--border);border-radius:10px;padding:11px 16px;font-family:'Tajawal',sans-serif;font-size:14px;color:var(--text);direction:ltr"
-      oninput="localStorage.setItem('rbg_key',this.value)"
-    >
-    <span style="font-size:12px;color:var(--muted);white-space:nowrap">🔑 يُحفظ تلقائياً</span>
-  </div>
-
   <div class="upload-area" id="uploadArea"
     ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
     onclick="document.getElementById('fileInput').click()">
@@ -402,6 +382,9 @@
 </div>
 
 <script>
+// المفتاح مدمج تلقائياً ولا يظهر للمستخدم
+const apiKey = "mBgPUXxyaB9aSA1fXokUe1cc";
+
 // ━━━ Stats & Counters Logic ━━━
 function updateStatsUI() {
   fetch('/api/stats')
@@ -502,12 +485,6 @@ let resultBlob = null;
 function handleFile(file) {
   if (!file) return;
 
-  const apiKey = document.getElementById('apiKeyInput').value.trim();
-  if (!apiKey) {
-    alert('⚠️ أدخل API Key من remove.bg أولاً!');
-    return;
-  }
-
   const reader = new FileReader();
   reader.onload = e => document.getElementById('originalImg').src = e.target.result;
   reader.readAsDataURL(file);
@@ -554,7 +531,7 @@ function handleFile(file) {
     if (err.message === '402') {
       alert('❌ انتهى رصيد الـ API — اشترِ رصيداً من remove.bg');
     } else if (err.message === '403') {
-      alert('❌ API Key غير صحيح');
+      alert('❌ مفتاح الـ API مفقود أو غير صحيح');
     } else {
       alert('❌ حدث خطأ: ' + err.message);
     }
@@ -576,10 +553,6 @@ function resetApp() {
   document.getElementById('fileInput').value = '';
   document.getElementById('progressFill').style.width = '0%';
 }
-
-// Load saved API key
-const saved = localStorage.getItem('rbg_key');
-if (saved) document.getElementById('apiKeyInput').value = saved;
 
 const style = document.createElement('style');
 style.textContent = '@keyframes fadeOut{to{opacity:0;transform:scale(0.97)}}';
