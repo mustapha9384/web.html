@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 const statsFilePath = path.join(__dirname, 'stats.json');
 
-// دالة لقراءة الإحصائيات من الملف
+// دالة قراءة الإحصائيات المشتركة من السيرفر
 function readStats() {
     try {
         if (!fs.existsSync(statsFilePath)) {
@@ -15,7 +15,7 @@ function readStats() {
         const data = fs.readFileSync(statsFilePath, 'utf8');
         let stats = JSON.parse(data);
         
-        // تصفير عداد اليوم إذا تغير التاريخ
+        // تصفير عداد اليوم التلقائي إذا تغير التاريخ
         const today = new Date().toDateString();
         if (stats.lastResetDate !== today) {
             stats.todayLogins = 0;
@@ -28,16 +28,22 @@ function readStats() {
     }
 }
 
-// دالة لحفظ الإحصائيات في الملف
+// دالة حفظ الإحصائيات
 function saveStats(stats) {
     fs.writeFileSync(statsFilePath, JSON.stringify(stats, null, 2), 'utf8');
 }
 
 app.use(express.json());
-// لتشغيل ملفات الواجهة (تأكد من وضع ملف الـ HTML داخل مجلد باسم public أو تعديل المسار)
+
+// تمكين قراءة الملفات الثابتة من مجلد public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API لجلب الإحصائيات العامة للكل
+// حل مشكلة (Cannot GET /): توجيه السيرفر لعرض ملف index.html مباشرة عند فتح الرابط الأساسي
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// الـ APIs الخاصة بلوحة التحكم بالإحصائيات العامة للكل
 app.get('/api/stats', (req, res) => {
     const stats = readStats();
     res.json({
@@ -46,7 +52,6 @@ app.get('/api/stats', (req, res) => {
     });
 });
 
-// API لزيادة عداد تسجيلات الدخول العام
 app.post('/api/stats/login', (req, res) => {
     let stats = readStats();
     stats.todayLogins++;
@@ -54,7 +59,6 @@ app.post('/api/stats/login', (req, res) => {
     res.json({ success: true, todayLogins: stats.todayLogins });
 });
 
-// API لزيادة عداد الصور المزالة العام
 app.post('/api/stats/image', (req, res) => {
     let stats = readStats();
     stats.totalImagesRemoved++;
@@ -63,5 +67,5 @@ app.post('/api/stats/image', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running successfully on port ${PORT}`);
 });
