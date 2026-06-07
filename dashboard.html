@@ -3,798 +3,570 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bot Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<title>مزيل الخلفية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0b0f;
-    --surface: #12141a;
-    --card: #1a1d26;
-    --border: #2a2d3a;
-    --accent: #5865f2;
-    --accent2: #eb459e;
-    --accent3: #57f287;
-    --text: #e8eaf0;
-    --muted: #7b7f8e;
-    --glow: rgba(88,101,242,0.3);
+    --bg: #f0f4ff;
+    --white: #ffffff;
+    --accent: #6366f1;
+    --accent2: #ec4899;
+    --text: #1e1b4b;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 20px 60px rgba(99,102,241,0.15);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin:0; padding:0; box-sizing:border-box; }
 
   body {
     font-family: 'Tajawal', sans-serif;
     background: var(--bg);
-    color: var(--text);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
     overflow-x: hidden;
   }
 
-  /* Background grid */
-  body::before {
-    content: '';
+  /* Blobs */
+  .blob {
     position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(88,101,242,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(88,101,242,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Glow blobs */
-  body::after {
-    content: '';
-    position: fixed;
-    top: -200px;
-    right: -200px;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(88,101,242,0.12) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .blob2 {
-    position: fixed;
-    bottom: -200px;
-    left: -200px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(235,69,158,0.08) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Layout */
-  .layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
-
-  /* Sidebar */
-  .sidebar {
-    width: 240px;
-    background: var(--surface);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 24px 0;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 100;
-  }
-
-  .logo {
-    padding: 0 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .logo-icon {
-    width: 42px;
-    height: 42px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    box-shadow: 0 0 20px var(--glow);
-  }
-
-  .logo-text { font-weight: 900; font-size: 18px; }
-  .logo-text span { color: var(--accent); }
-
-  .nav { padding: 20px 12px; flex: 1; }
-
-  .nav-section {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--muted);
-    letter-spacing: 2px;
-    padding: 0 8px;
-    margin-bottom: 8px;
-    margin-top: 16px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    color: var(--muted);
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s;
-    margin-bottom: 2px;
-  }
-
-  .nav-item:hover { background: var(--card); color: var(--text); }
-
-  .nav-item.active {
-    background: linear-gradient(135deg, rgba(88,101,242,0.2), rgba(235,69,158,0.1));
-    color: var(--text);
-    border: 1px solid rgba(88,101,242,0.3);
-  }
-
-  .nav-icon { font-size: 18px; width: 22px; text-align: center; }
-
-  .badge {
-    margin-right: auto;
-    background: var(--accent);
-    color: white;
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 20px;
-    font-weight: 700;
-  }
-
-  .bot-status {
-    margin: 0 12px;
-    padding: 14px;
-    background: var(--card);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .status-dot {
-    width: 10px;
-    height: 10px;
     border-radius: 50%;
-    background: var(--accent3);
-    box-shadow: 0 0 8px var(--accent3);
-    animation: pulse 2s infinite;
-    flex-shrink: 0;
+    filter: blur(80px);
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob1 { width:500px; height:500px; background:#6366f1; top:-100px; right:-100px; }
+  .blob2 { width:400px; height:400px; background:#ec4899; bottom:-100px; left:-100px; }
+
+  /* Captcha Screen */
+  #captchaScreen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    flex-direction: column;
+    gap: 0;
   }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.2); }
+  .captcha-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 36px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    z-index: 1;
   }
 
-  .status-info { flex: 1; }
-  .status-name { font-size: 13px; font-weight: 700; }
-  .status-label { font-size: 11px; color: var(--accent3); }
-
-  /* Main */
-  .main {
-    margin-right: 240px;
-    flex: 1;
-    padding: 32px;
-    min-height: 100vh;
+  .captcha-logo {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 25px rgba(99,102,241,0.35);
   }
 
-  /* Header */
-  .header {
+  .captcha-card h1 {
+    font-size: 22px; font-weight: 900; color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .captcha-card p {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 28px; line-height: 1.6;
+  }
+
+  /* Captcha Box */
+  .captcha-box {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-  }
-
-  .header-title h1 {
-    font-size: 28px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--text), var(--muted));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .header-title p { color: var(--muted); font-size: 14px; margin-top: 4px; }
-
-  .header-actions { display: flex; gap: 10px; align-items: center; }
-
-  .btn {
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
+    gap: 14px;
     cursor: pointer;
-    border: none;
-    transition: all 0.2s;
+    transition: all 0.3s;
+    margin-bottom: 20px;
+    background: #fafafa;
+    user-select: none;
   }
 
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), #4752c4);
+  .captcha-box:hover { border-color: var(--accent); background: #f5f3ff; }
+  .captcha-box.checking { border-color: var(--accent); background: #f5f3ff; }
+  .captcha-box.done { border-color: #10b981; background: #f0fdf4; }
+
+  .captcha-checkbox {
+    width: 28px; height: 28px;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .captcha-box.checking .captcha-checkbox {
+    border-color: var(--accent);
+  }
+
+  .captcha-box.done .captcha-checkbox {
+    background: #10b981;
+    border-color: #10b981;
+  }
+
+  .captcha-box.done .captcha-checkbox::after {
+    content: '✓';
     color: white;
-    box-shadow: 0 4px 15px var(--glow);
+    font-size: 16px;
+    font-weight: 900;
   }
 
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--glow); }
-
-  .btn-ghost {
-    background: var(--card);
-    color: var(--muted);
-    border: 1px solid var(--border);
+  /* Spinner inside checkbox */
+  .cb-spinner {
+    width: 16px; height: 16px;
+    border: 2px solid #e5e7eb;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
   }
 
-  .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+  .captcha-box.checking .cb-spinner { display: block; }
+  .captcha-box.done .cb-spinner { display: none; }
 
-  /* Stats Grid */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .captcha-label {
+    font-size: 15px; font-weight: 600; color: var(--text); flex: 1; text-align: right;
+  }
+
+  .captcha-brand {
+    font-size: 11px; color: var(--muted);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+
+  .btn-enter {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 16px;
+    display: none;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+  }
+
+  .btn-enter:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(99,102,241,0.5); }
+  .btn-enter.visible { display: block; animation: fadeUp 0.4s ease; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ━━━ Main App ━━━ */
+  #mainApp {
+    display: none;
+    width: 100%;
+    max-width: 800px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .app-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .app-logo {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    margin: 0 auto 16px;
+    box-shadow: 0 12px 35px rgba(99,102,241,0.35);
+  }
+
+  .app-header h1 { font-size: 32px; font-weight: 900; color: var(--text); }
+  .app-header p { font-size: 15px; color: var(--muted); margin-top: 6px; }
+
+  /* Upload Area */
+  .upload-area {
+    background: white;
+    border: 2.5px dashed #c7d2fe;
+    border-radius: 24px;
+    padding: 50px 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
     margin-bottom: 24px;
   }
 
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s;
-    animation: fadeUp 0.5s ease both;
-  }
+  .upload-area:hover, .upload-area.drag { border-color: var(--accent); background: #f5f3ff; }
 
-  .stat-card:nth-child(1) { animation-delay: 0.1s; }
-  .stat-card:nth-child(2) { animation-delay: 0.2s; }
-  .stat-card:nth-child(3) { animation-delay: 0.3s; }
-  .stat-card:nth-child(4) { animation-delay: 0.4s; }
+  .upload-icon { font-size: 52px; margin-bottom: 14px; }
+  .upload-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .upload-sub { font-size: 13px; color: var(--muted); }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .stat-card:hover {
-    border-color: rgba(88,101,242,0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-  }
-
-  .stat-card.blue::before { background: linear-gradient(90deg, var(--accent), transparent); }
-  .stat-card.pink::before { background: linear-gradient(90deg, var(--accent2), transparent); }
-  .stat-card.green::before { background: linear-gradient(90deg, var(--accent3), transparent); }
-  .stat-card.yellow::before { background: linear-gradient(90deg, #fee75c, transparent); }
-
-  .stat-icon {
-    width: 44px;
-    height: 44px;
+  .upload-btn {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
     border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin-bottom: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+    transition: all 0.2s;
   }
 
-  .stat-icon.blue { background: rgba(88,101,242,0.15); }
-  .stat-icon.pink { background: rgba(235,69,158,0.15); }
-  .stat-icon.green { background: rgba(87,242,135,0.15); }
-  .stat-icon.yellow { background: rgba(254,231,92,0.15); }
+  .upload-btn:hover { transform: translateY(-2px); }
 
-  .stat-value { font-size: 32px; font-weight: 900; line-height: 1; }
-  .stat-label { font-size: 13px; color: var(--muted); margin-top: 6px; }
-  .stat-change { font-size: 12px; margin-top: 12px; display: flex; align-items: center; gap: 4px; }
-  .stat-change.up { color: var(--accent3); }
-  .stat-change.down { color: var(--accent2); }
+  input[type=file] { display: none; }
 
-  /* Main content grid */
-  .content-grid {
+  /* Processing */
+  .processing {
+    display: none;
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .process-spinner {
+    width: 60px; height: 60px;
+    border: 4px solid #e5e7eb;
+    border-top-color: var(--accent);
+    border-right-color: var(--accent2);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  .process-title { font-size: 18px; font-weight: 700; color: var(--text); }
+  .process-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  /* Progress bar */
+  .progress-wrap {
+    width: 100%; background: #e5e7eb; border-radius: 10px;
+    height: 8px; margin-top: 20px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* Result */
+  .result-area {
+    display: none;
+    background: white;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+  }
+
+  .result-title {
+    font-size: 18px; font-weight: 700; color: var(--text);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .compare-wrap {
     display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 20px;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
     margin-bottom: 20px;
   }
 
-  .panel {
-    background: var(--card);
+  .img-box { border-radius: 14px; overflow: hidden; position: relative; }
+  .img-box label {
+    display: block;
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    margin-bottom: 8px; text-align: center;
+  }
+
+  .img-box img {
+    width: 100%; border-radius: 10px;
     border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    animation: fadeUp 0.5s ease both;
-    animation-delay: 0.5s;
+    display: block;
   }
 
-  .panel-header {
-    padding: 18px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .panel-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-  .panel-body { padding: 20px; }
-
-  /* Chart bars */
-  .chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
-
-  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-
-  .bar {
-    width: 100%;
-    border-radius: 6px 6px 0 0;
-    background: linear-gradient(180deg, var(--accent), rgba(88,101,242,0.3));
-    transition: all 0.3s;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .bar:hover { background: linear-gradient(180deg, var(--accent2), rgba(235,69,158,0.3)); }
-
-  .bar-label { font-size: 10px; color: var(--muted); }
-
-  /* Commands list */
-  .cmd-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .cmd-item:last-child { border-bottom: none; }
-
-  .cmd-name {
-    font-size: 13px;
-    font-weight: 600;
-    font-family: monospace;
-    color: var(--accent);
-    background: rgba(88,101,242,0.1);
-    padding: 3px 8px;
-    border-radius: 6px;
-  }
-
-  .cmd-count { font-size: 13px; color: var(--muted); }
-  .cmd-bar-wrap { flex: 1; margin: 0 12px; }
-  .cmd-bar { height: 4px; background: var(--border); border-radius: 2px; }
-  .cmd-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
-
-  /* Servers list */
-  .server-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
+  /* Checkerboard for transparent */
+  .transparent-bg {
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+      linear-gradient(-45deg, #ccc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ccc 75%),
+      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
     border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .result-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .btn-download {
+    flex: 1;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+    transition: all 0.2s;
+  }
+
+  .btn-download:hover { transform: translateY(-2px); }
+
+  .btn-again {
+    padding: 14px 24px;
+    background: white;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px; font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
-    margin-bottom: 4px;
   }
 
-  .server-item:hover { background: var(--surface); }
+  .btn-again:hover { background: #f5f3ff; }
 
-  .server-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .server-info { flex: 1; }
-  .server-name { font-size: 13px; font-weight: 600; }
-  .server-members { font-size: 11px; color: var(--muted); }
-  .server-arrow { color: var(--muted); font-size: 12px; }
-
-  /* Bottom grid */
-  .bottom-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  /* Log items */
-  .log-item {
-    display: flex;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    align-items: flex-start;
-  }
-
-  .log-item:last-child { border-bottom: none; }
-
-  .log-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-top: 5px;
-    flex-shrink: 0;
-  }
-
-  .log-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
-  .log-text strong { color: var(--text); }
-  .log-time { font-size: 10px; color: var(--muted); margin-top: 3px; }
-
-  /* Toggle switch */
-  .toggle-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .toggle-item:last-child { border-bottom: none; }
-
-  .toggle-label { font-size: 13px; font-weight: 500; }
-  .toggle-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-  .toggle {
-    width: 44px;
-    height: 24px;
-    background: var(--border);
-    border-radius: 12px;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.3s;
-    flex-shrink: 0;
-  }
-
-  .toggle.on { background: var(--accent); }
-
-  .toggle::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    background: white;
-    border-radius: 50%;
-    top: 3px;
-    right: 3px;
-    transition: all 0.3s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  }
-
-  .toggle.on::after { right: 23px; }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  @media (max-width: 900px) {
-    .sidebar { display: none; }
-    .main { margin-right: 0; padding: 16px; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .content-grid { grid-template-columns: 1fr; }
-    .bottom-grid { grid-template-columns: 1fr; }
+  @media(max-width:600px) {
+    .compare-wrap { grid-template-columns: 1fr; }
+    .app-header h1 { font-size: 24px; }
   }
 </style>
 </head>
 <body>
-<div class="blob2"></div>
 
-<div class="layout">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">🤖</div>
-      <div class="logo-text">Bot<span>Panel</span></div>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div id="captchaScreen">
+  <div class="captcha-card">
+    <div class="captcha-logo">✂️</div>
+    <h1>مزيل الخلفية</h1>
+    <p>تحقق من أنك لست روبوتاً للمتابعة</p>
+
+    <div class="captcha-box" id="captchaBox" onclick="startCaptcha()">
+      <div class="captcha-checkbox" id="captchaCheck">
+        <div class="cb-spinner"></div>
+      </div>
+      <div class="captcha-label">لست روبوتاً</div>
+      <span style="font-size:22px">🛡️</span>
     </div>
 
-    <nav class="nav">
-      <div class="nav-section">القائمة الرئيسية</div>
-      <div class="nav-item active">
-        <span class="nav-icon">📊</span> لوحة التحكم
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">🏠</span> السيرفرات
-        <span class="badge">12</span>
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">⚡</span> الأوامر
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">📈</span> الإحصائيات
-      </div>
-
-      <div class="nav-section">الإعدادات</div>
-      <div class="nav-item">
-        <span class="nav-icon">🛡️</span> الحماية
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">🎵</span> الموسيقى
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">🎫</span> التذاكر
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">⚙️</span> الإعدادات
-      </div>
-    </nav>
-
-    <div class="bot-status">
-      <div class="status-dot"></div>
-      <div class="status-info">
-        <div class="status-name">MyBot#0001</div>
-        <div class="status-label">● متصل</div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Main Content -->
-  <main class="main">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-title">
-        <h1>لوحة التحكم</h1>
-        <p>مرحباً بك 👋 — آخر تحديث: منذ دقيقتين</p>
-      </div>
-      <div class="header-actions">
-        <button class="btn btn-ghost">🔔 الإشعارات</button>
-        <button class="btn btn-primary">⚡ إضافة للسيرفر</button>
-      </div>
+    <div class="captcha-brand">
+      <span>🔒</span>
+      <span>محمي بواسطة Secure Check</span>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card blue">
-        <div class="stat-icon blue">🏠</div>
-        <div class="stat-value">1,247</div>
-        <div class="stat-label">إجمالي السيرفرات</div>
-        <div class="stat-change up">↑ 12% من الشهر الماضي</div>
+    <button class="btn-enter" id="enterBtn" onclick="enterApp()">
+      ادخل الموقع ←
+    </button>
+  </div>
+</div>
+
+<div id="mainApp">
+  <div class="app-header">
+    <div class="app-logo">✂️</div>
+    <h1>مزيل الخلفية</h1>
+    <p>احذف خلفية أي صورة في ثوانٍ — مجاناً</p>
+  </div>
+
+  <div class="upload-area" id="uploadArea"
+    ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+    onclick="document.getElementById('fileInput').click()">
+    <div class="upload-icon">🖼️</div>
+    <div class="upload-title">اسحب الصورة هنا أو اضغط لاختيارها</div>
+    <div class="upload-sub">PNG, JPG, WEBP — حجم أقصى 10MB</div>
+    <div class="upload-btn">اختر صورة</div>
+    <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this.files[0])">
+  </div>
+
+  <div class="processing" id="processing">
+    <div class="process-spinner"></div>
+    <div class="process-title">جاري إزالة الخلفية... ✨</div>
+    <div class="process-sub">هذا يستغرق بضع ثوانٍ</div>
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="result-area" id="resultArea">
+    <div class="result-title">✅ تمت إزالة الخلفية!</div>
+    <div class="compare-wrap">
+      <div class="img-box">
+        <label>الصورة الأصلية</label>
+        <img id="originalImg" src="" alt="original">
       </div>
-      <div class="stat-card pink">
-        <div class="stat-icon pink">👥</div>
-        <div class="stat-value">84.3K</div>
-        <div class="stat-label">إجمالي الأعضاء</div>
-        <div class="stat-change up">↑ 8.5% نمو</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-icon green">⚡</div>
-        <div class="stat-value">23.1K</div>
-        <div class="stat-label">أوامر اليوم</div>
-        <div class="stat-change up">↑ 24% اليوم</div>
-      </div>
-      <div class="stat-card yellow">
-        <div class="stat-icon yellow">⏱️</div>
-        <div class="stat-value">99.8%</div>
-        <div class="stat-label">وقت التشغيل</div>
-        <div class="stat-change up">↑ ممتاز</div>
+      <div class="img-box transparent-bg">
+        <label>بدون خلفية</label>
+        <img id="resultImg" src="" alt="result">
       </div>
     </div>
-
-    <!-- Chart + Servers -->
-    <div class="content-grid">
-      <!-- Chart Panel -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">📊 نشاط الأوامر — آخر 7 أيام</div>
-          <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;">هذا الأسبوع ▾</button>
-        </div>
-        <div class="panel-body">
-          <div class="chart" id="chart"></div>
-          <div style="margin-top:16px;">
-            <div class="cmd-item">
-              <span class="cmd-name">/help</span>
-              <div class="cmd-bar-wrap"><div class="cmd-bar"><div class="cmd-bar-fill" style="width:90%"></div></div></div>
-              <span class="cmd-count">9,241</span>
-            </div>
-            <div class="cmd-item">
-              <span class="cmd-name">/play</span>
-              <div class="cmd-bar-wrap"><div class="cmd-bar"><div class="cmd-bar-fill" style="width:70%"></div></div></div>
-              <span class="cmd-count">7,142</span>
-            </div>
-            <div class="cmd-item">
-              <span class="cmd-name">/ban</span>
-              <div class="cmd-bar-wrap"><div class="cmd-bar"><div class="cmd-bar-fill" style="width:45%"></div></div></div>
-              <span class="cmd-count">4,621</span>
-            </div>
-            <div class="cmd-item">
-              <span class="cmd-name">/ticket</span>
-              <div class="cmd-bar-wrap"><div class="cmd-bar"><div class="cmd-bar-fill" style="width:30%"></div></div></div>
-              <span class="cmd-count">3,108</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Servers Panel -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">🏠 أكبر السيرفرات</div>
-        </div>
-        <div class="panel-body" style="padding:12px">
-          <div class="server-item">
-            <div class="server-icon" style="background:rgba(88,101,242,0.2)">🎮</div>
-            <div class="server-info">
-              <div class="server-name">Gaming Hub</div>
-              <div class="server-members">12,481 عضو</div>
-            </div>
-            <span class="server-arrow">←</span>
-          </div>
-          <div class="server-item">
-            <div class="server-icon" style="background:rgba(235,69,158,0.2)">🎵</div>
-            <div class="server-info">
-              <div class="server-name">Music Vibes</div>
-              <div class="server-members">8,923 عضو</div>
-            </div>
-            <span class="server-arrow">←</span>
-          </div>
-          <div class="server-item">
-            <div class="server-icon" style="background:rgba(87,242,135,0.2)">💬</div>
-            <div class="server-info">
-              <div class="server-name">Chat Zone</div>
-              <div class="server-members">6,712 عضو</div>
-            </div>
-            <span class="server-arrow">←</span>
-          </div>
-          <div class="server-item">
-            <div class="server-icon" style="background:rgba(254,231,92,0.2)">⭐</div>
-            <div class="server-info">
-              <div class="server-name">Star Community</div>
-              <div class="server-members">5,241 عضو</div>
-            </div>
-            <span class="server-arrow">←</span>
-          </div>
-          <div class="server-item">
-            <div class="server-icon" style="background:rgba(88,101,242,0.2)">🔥</div>
-            <div class="server-info">
-              <div class="server-name">Fire Squad</div>
-              <div class="server-members">4,981 عضو</div>
-            </div>
-            <span class="server-arrow">←</span>
-          </div>
-        </div>
-      </div>
+    <div class="result-actions">
+      <button class="btn-download" onclick="downloadResult()">⬇️ تحميل PNG</button>
+      <button class="btn-again" onclick="resetApp()">🔄 صورة جديدة</button>
     </div>
-
-    <!-- Bottom -->
-    <div class="bottom-grid">
-      <!-- Logs -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">📋 آخر الأحداث</div>
-          <span style="font-size:12px;color:var(--muted)">مباشر</span>
-        </div>
-        <div class="panel-body">
-          <div class="log-item">
-            <div class="log-dot" style="background:var(--accent3)"></div>
-            <div>
-              <div class="log-text"><strong>Ahmed#1234</strong> استخدم الأمر /play في <strong>Music Vibes</strong></div>
-              <div class="log-time">منذ 30 ثانية</div>
-            </div>
-          </div>
-          <div class="log-item">
-            <div class="log-dot" style="background:var(--accent2)"></div>
-            <div>
-              <div class="log-text"><strong>Mod#5678</strong> قام بـ ban على <strong>Spammer#9999</strong></div>
-              <div class="log-time">منذ 2 دقيقة</div>
-            </div>
-          </div>
-          <div class="log-item">
-            <div class="log-dot" style="background:var(--accent)"></div>
-            <div>
-              <div class="log-text">البوت انضم لسيرفر <strong>New Server</strong></div>
-              <div class="log-time">منذ 5 دقائق</div>
-            </div>
-          </div>
-          <div class="log-item">
-            <div class="log-dot" style="background:#fee75c"></div>
-            <div>
-              <div class="log-text"><strong>User#4444</strong> فتح تذكرة دعم في <strong>Chat Zone</strong></div>
-              <div class="log-time">منذ 8 دقائق</div>
-            </div>
-          </div>
-          <div class="log-item">
-            <div class="log-dot" style="background:var(--accent3)"></div>
-            <div>
-              <div class="log-text">تم تحديث الأوامر بنجاح ✓</div>
-              <div class="log-time">منذ 15 دقيقة</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Settings Toggles -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">⚙️ إعدادات سريعة</div>
-        </div>
-        <div class="panel-body">
-          <div class="toggle-item">
-            <div>
-              <div class="toggle-label">الحماية من السبام</div>
-              <div class="toggle-desc">حذف الرسائل المتكررة تلقائياً</div>
-            </div>
-            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-          </div>
-          <div class="toggle-item">
-            <div>
-              <div class="toggle-label">رسالة الترحيب</div>
-              <div class="toggle-desc">رحب بالأعضاء الجدد</div>
-            </div>
-            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-          </div>
-          <div class="toggle-item">
-            <div>
-              <div class="toggle-label">نظام التذاكر</div>
-              <div class="toggle-desc">فتح تذاكر الدعم الفني</div>
-            </div>
-            <div class="toggle" onclick="this.classList.toggle('on')"></div>
-          </div>
-          <div class="toggle-item">
-            <div>
-              <div class="toggle-label">الموسيقى</div>
-              <div class="toggle-desc">تشغيل الموسيقى في الفويس</div>
-            </div>
-            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-          </div>
-          <div class="toggle-item">
-            <div>
-              <div class="toggle-label">نظام اللفلات</div>
-              <div class="toggle-desc">مكافأة الأعضاء النشطين</div>
-            </div>
-            <div class="toggle" onclick="this.classList.toggle('on')"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+  </div>
 </div>
 
 <script>
-  // Generate chart bars
-  const chart = document.getElementById('chart');
-  const days = ['الأحد','الإث','الثل','الأر','الخم','الجم','السب'];
-  const values = [65, 82, 54, 90, 78, 95, 70];
-  const max = Math.max(...values);
+// ━━━ Captcha Logic ━━━
+let captchaDone = false;
 
-  days.forEach((day, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'bar-wrap';
-    const bar = document.createElement('div');
-    bar.className = 'bar';
-    bar.style.height = '0px';
-    bar.title = `${values[i]} أمر`;
-    const label = document.createElement('div');
-    label.className = 'bar-label';
-    label.textContent = day;
-    wrap.appendChild(bar);
-    wrap.appendChild(label);
-    chart.appendChild(wrap);
+function startCaptcha() {
+  if (captchaDone) return;
+  const box = document.getElementById('captchaBox');
+  box.classList.add('checking');
+  setTimeout(() => {
+    box.classList.remove('checking');
+    box.classList.add('done');
+    captchaDone = true;
+    document.getElementById('enterBtn').classList.add('visible');
+  }, 1800);
+}
 
+function enterApp() {
+  if (!captchaDone) return;
+  document.getElementById('captchaScreen').style.animation = 'fadeOut 0.4s ease forwards';
+  setTimeout(() => {
+    document.getElementById('captchaScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+  }, 400);
+}
+
+// ━━━ Upload Logic ━━━
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.add('drag');
+}
+
+function handleDragLeave() {
+  document.getElementById('uploadArea').classList.remove('drag');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) handleFile(file);
+}
+
+let resultBlob = null;
+
+// تم دمج الـ API Key الخاص بك هنا مباشرة
+const apiKey = "mBgPUXxyaB9aSA1fXokUe1cc";
+
+function handleFile(file) {
+  if (!file) return;
+
+  // Show original preview
+  const reader = new FileReader();
+  reader.onload = e => document.getElementById('originalImg').src = e.target.result;
+  reader.readAsDataURL(file);
+
+  // Show processing
+  document.getElementById('uploadArea').style.display = 'none';
+  document.getElementById('processing').style.display = 'block';
+  document.getElementById('resultArea').style.display = 'none';
+
+  // Animate progress
+  let progress = 0;
+  const progressFill = document.getElementById('progressFill');
+  const interval = setInterval(() => {
+    progress = Math.min(progress + Math.random() * 12, 85);
+    progressFill.style.width = progress + '%';
+  }, 300);
+
+  // Call remove.bg API
+  const formData = new FormData();
+  formData.append('image_file', file);
+  formData.append('size', 'auto');
+
+  fetch('https://api.remove.bg/v1.0/removebg', {
+    method: 'POST',
+    headers: { 'X-Api-Key': apiKey },
+    body: formData
+  })
+  .then(res => {
+    if (!res.ok) throw new Error(res.status);
+    return res.blob();
+  })
+  .then(blob => {
+    clearInterval(interval);
+    progressFill.style.width = '100%';
+    resultBlob = blob;
+    const url = URL.createObjectURL(blob);
+    document.getElementById('resultImg').src = url;
     setTimeout(() => {
-      bar.style.transition = 'height 0.6s cubic-bezier(0.34,1.56,0.64,1)';
-      bar.style.height = `${(values[i] / max) * 100}px`;
-    }, i * 80 + 300);
+      document.getElementById('processing').style.display = 'none';
+      document.getElementById('resultArea').style.display = 'block';
+    }, 400);
+  })
+  .catch(err => {
+    clearInterval(interval);
+    document.getElementById('processing').style.display = 'none';
+    document.getElementById('uploadArea').style.display = 'block';
+    if (err.message === '402') {
+      alert('❌ انتهى رصيد الـ API — اشترِ رصيداً من remove.bg');
+    } else if (err.message === '403') {
+      alert('❌ API Key غير صحيح أو تم إلغاؤه');
+    } else {
+      alert('❌ حدث خطأ: ' + err.message);
+    }
   });
+}
+
+function downloadResult() {
+  if (!resultBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(resultBlob);
+  a.download = 'removed_bg.png';
+  a.click();
+}
+
+function resetApp() {
+  resultBlob = null;
+  document.getElementById('resultArea').style.display = 'none';
+  document.getElementById('uploadArea').style.display = 'block';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('progressFill').style.width = '0%';
+}
+
+// Captcha fadeout animation
+const style = document.createElement('style');
+style.textContent = '@keyframes fadeOut{to{opacity:0;transform:scale(0.97)}}';
+document.head.appendChild(style);
 </script>
 </body>
 </html>
