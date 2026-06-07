@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0b0f;
+    --surface: #12141a;
+    --card: #1a1d26;
+    --border: #2a2d3a;
+    --accent: #5865f2;
+    --accent2: #eb459e;
+    --accent3: #57f287;
+    --text: #e8eaf0;
+    --muted: #7b7f8e;
+    --glow: rgba(88,101,242,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(88,101,242,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,101,242,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow blobs */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(88,101,242,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .blob2 {
+    position: fixed;
+    bottom: -200px;
+    left: -200px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(235,69,158,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Layout */
+  .layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 0 20px var(--glow);
+  }
+
+  .logo-text { font-weight: 900; font-size: 18px; }
+  .logo-text span { color: var(--accent); }
+
+  .nav { padding: 20px 12px; flex: 1; }
+
+  .nav-section {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 2px;
+    padding: 0 8px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .nav-item:hover { background: var(--card); color: var(--text); }
+
+  .nav-item.active {
+    background: linear-gradient(135deg, rgba(88,101,242,0.2), rgba(235,69,158,0.1));
+    color: var(--text);
+    border: 1px solid rgba(88,101,242,0.3);
+  }
+
+  .nav-icon { font-size: 18px; width: 22px; text-align: center; }
+
+  .badge {
+    margin-right: auto;
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+
+  .bot-status {
+    margin: 0 12px;
+    padding: 14px;
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent3);
+    box-shadow: 0 0 8px var(--accent3);
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+  }
+
+  .status-info { flex: 1; }
+  .status-name { font-size: 13px; font-weight: 700; }
+  .status-label { font-size: 11px; color: var(--accent3); }
+
+  /* Main */
+  .main {
+    margin-right: 240px;
+    flex: 1;
+    padding: 32px;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .header-title h1 {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--text), var(--muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-title p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #4752c4);
+    color: white;
+    box-shadow: 0 4px 15px var(--glow);
+  }
+
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--glow); }
+
+  .btn-ghost {
+    background: var(--card);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .stat-card:nth-child(1) { animation-delay: 0.1s; }
+  .stat-card:nth-child(2) { animation-delay: 0.2s; }
+  .stat-card:nth-child(3) { animation-delay: 0.3s; }
+  .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .stat-card:hover {
+    border-color: rgba(88,101,242,0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }
+
+  .stat-card.blue::before { background: linear-gradient(90deg, var(--accent), transparent); }
+  .stat-card.pink::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+  .stat-card.green::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+  .stat-card.yellow::before { background: linear-gradient(90deg, #fee75c, transparent); }
+
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .stat-icon.blue { background: rgba(88,101,242,0.15); }
+  .stat-icon.pink { background: rgba(235,69,158,0.15); }
+  .stat-icon.green { background: rgba(87,242,135,0.15); }
+  .stat-icon.yellow { background: rgba(254,231,92,0.15); }
+
+  .stat-value { font-size: 32px; font-weight: 900; line-height: 1; }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .stat-change { font-size: 12px; margin-top: 12px; display: flex; align-items: center; gap: 4px; }
+  .stat-change.up { color: var(--accent3); }
+  .stat-change.down { color: var(--accent2); }
+
+  /* Main content grid */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+    animation-delay: 0.5s;
+  }
+
+  .panel-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .panel-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .panel-body { padding: 20px; }
+
+  /* Chart bars */
+  .chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+
+  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+  .bar {
+    width: 100%;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, var(--accent), rgba(88,101,242,0.3));
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .bar:hover { background: linear-gradient(180deg, var(--accent2), rgba(235,69,158,0.3)); }
+
+  .bar-label { font-size: 10px; color: var(--muted); }
+
+  /* Commands list */
+  .cmd-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cmd-item:last-child { border-bottom: none; }
+
+  .cmd-name {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: monospace;
+    color: var(--accent);
+    background: rgba(88,101,242,0.1);
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .cmd-count { font-size: 13px; color: var(--muted); }
+  .cmd-bar-wrap { flex: 1; margin: 0 12px; }
+  .cmd-bar { height: 4px; background: var(--border); border-radius: 2px; }
+  .cmd-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+  /* Servers list */
+  .server-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+  }
+
+  .server-item:hover { background: var(--surface); }
+
+  .server-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .server-info { flex: 1; }
+  .server-name { font-size: 13px; font-weight: 600; }
+  .server-members { font-size: 11px; color: var(--muted); }
+  .server-arrow { color: var(--muted); font-size: 12px; }
+
+  /* Bottom grid */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* Log items */
+  .log-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .log-item:last-child { border-bottom: none; }
+
+  .log-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .log-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .log-text strong { color: var(--text); }
+  .log-time { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+  /* Toggle switch */
+  .toggle-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toggle-item:last-child { border-bottom: none; }
+
+  .toggle-label { font-size: 13px; font-weight: 500; }
+  .toggle-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .toggle {
+    width: 44px;
+    height: 24px;
+    background: var(--border);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .toggle.on { background: var(--accent); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    right: 3px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .toggle.on::after { right: 23px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-right: 0; padding: 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .content-grid { grid-template-columns: 1fr; }
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="blob2"></div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🤖</div>
+      <div class="logo-text">Bot<span>Panel</span></div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-section">القائمة الرئيسية</div>
+      <div class="nav-item active">
+        <span class="nav-icon">📊</span> لوحة التحكم
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🏠</span> السيرفرات
+        <span class="badge">12</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">⚡</span> الأوامر
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">📈</span> الإحصائيات
+      </div>
+
+      <div class="nav-section">الإعدادات</div>
+      <div class="nav-item">
+        <span class="nav-icon">🛡️</span> الحماية
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🎵</span> الموسيقى
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🎫</span> التذاكر
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">⚙️</span> الإعدادات
+      </div>
+    </nav>
+
+    <div class="bot-status">
+      <div class="status-dot"></div>
+      <div class="status-info">
+        <div class="status-name">MyBot#0001</div>
+        <div class="status-label">● متصل</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-title">
+        <h1>لوحة التحكم</h1>
+        <p>مرحباً بك 👋 — آخر تحديث: منذ دقيقتين</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost">🔔 الإشعارات</button>
+        <button class="btn btn-primary">⚡ إضافة للسيرفر</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon blue">🏠</div>
+        <div class="stat-value">1,247</div>
+        <div class="stat-label">إجمالي السيرفرات</div>
+        <div class="stat-change up">↑ 12% من الشهر الماضي</div>
+      </div>
+      <div class="stat-card pink">
+        <div class="stat-icon pink">👥</div>
+        <div class="stat-value">84.3K</div>
+        <div class="stat-label">إجمالي الأعضاء</div>
+        <div class="stat-change up">↑ 8.5% نمو</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon green">⚡</div>
+        <div class="stat-value">23.1K</div>
+        <div class="stat-label">أوامر اليوم</div>
+        <div class="stat-change up">↑ 24% اليوم</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-icon yellow">⏱️</div>
+        <div class="stat-value">99.8%</div>
+        <div class="stat-label">وقت التشغيل</div>
+        <div class="stat-change up">↑ ممتاز</div>
+      </div>
+    </div>
+
+    <!-- Chart + Servers -->
+    <div class="content-grid">
+      <!-- Chart Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📊 نشاط الأوامر — آخر 7 أيام</div>
+          <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;">هذا الأسبوع ▾</button>
+        </div>
+        <div class="panel-body">
+          <div class="chart" id="chart"></div>
+          <div style="margin-top:16px;">
+            <div class="cmd-item">
+              <span class="cmd-name">/help</span>
+              <div class="cmd-bar-wrap"><div class="cmd-bar"><div class="cmd-bar-fill" style="width:90%"></div></div></div>
+              <span class="cmd-count">9,241</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/play</span>
+              <div class="cmd-bar-wrap"><div class="cmd-bar"><div class="cmd-bar-fill" style="width:70%"></div></div></div>
+              <span class="cmd-count">7,142</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/ban</span>
+              <div class="cmd-bar-wrap"><div class="cmd-bar"><div class="cmd-bar-fill" style="width:45%"></div></div></div>
+              <span class="cmd-count">4,621</span>
+            </div>
+            <div class="cmd-item">
+              <span class="cmd-name">/ticket</span>
+              <div class="cmd-bar-wrap"><div class="cmd-bar"><div class="cmd-bar-fill" style="width:30%"></div></div></div>
+              <span class="cmd-count">3,108</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Servers Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🏠 أكبر السيرفرات</div>
+        </div>
+        <div class="panel-body" style="padding:12px">
+          <div class="server-item">
+            <div class="server-icon" style="background:rgba(88,101,242,0.2)">🎮</div>
+            <div class="server-info">
+              <div class="server-name">Gaming Hub</div>
+              <div class="server-members">12,481 عضو</div>
+            </div>
+            <span class="server-arrow">←</span>
+          </div>
+          <div class="server-item">
+            <div class="server-icon" style="background:rgba(235,69,158,0.2)">🎵</div>
+            <div class="server-info">
+              <div class="server-name">Music Vibes</div>
+              <div class="server-members">8,923 عضو</div>
+            </div>
+            <span class="server-arrow">←</span>
+          </div>
+          <div class="server-item">
+            <div class="server-icon" style="background:rgba(87,242,135,0.2)">💬</div>
+            <div class="server-info">
+              <div class="server-name">Chat Zone</div>
+              <div class="server-members">6,712 عضو</div>
+            </div>
+            <span class="server-arrow">←</span>
+          </div>
+          <div class="server-item">
+            <div class="server-icon" style="background:rgba(254,231,92,0.2)">⭐</div>
+            <div class="server-info">
+              <div class="server-name">Star Community</div>
+              <div class="server-members">5,241 عضو</div>
+            </div>
+            <span class="server-arrow">←</span>
+          </div>
+          <div class="server-item">
+            <div class="server-icon" style="background:rgba(88,101,242,0.2)">🔥</div>
+            <div class="server-info">
+              <div class="server-name">Fire Squad</div>
+              <div class="server-members">4,981 عضو</div>
+            </div>
+            <span class="server-arrow">←</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="bottom-grid">
+      <!-- Logs -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📋 آخر الأحداث</div>
+          <span style="font-size:12px;color:var(--muted)">مباشر</span>
+        </div>
+        <div class="panel-body">
+          <div class="log-item">
+            <div class="log-dot" style="background:var(--accent3)"></div>
+            <div>
+              <div class="log-text"><strong>Ahmed#1234</strong> استخدم الأمر /play في <strong>Music Vibes</strong></div>
+              <div class="log-time">منذ 30 ثانية</div>
+            </div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot" style="background:var(--accent2)"></div>
+            <div>
+              <div class="log-text"><strong>Mod#5678</strong> قام بـ ban على <strong>Spammer#9999</strong></div>
+              <div class="log-time">منذ 2 دقيقة</div>
+            </div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot" style="background:var(--accent)"></div>
+            <div>
+              <div class="log-text">البوت انضم لسيرفر <strong>New Server</strong></div>
+              <div class="log-time">منذ 5 دقائق</div>
+            </div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot" style="background:#fee75c"></div>
+            <div>
+              <div class="log-text"><strong>User#4444</strong> فتح تذكرة دعم في <strong>Chat Zone</strong></div>
+              <div class="log-time">منذ 8 دقائق</div>
+            </div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot" style="background:var(--accent3)"></div>
+            <div>
+              <div class="log-text">تم تحديث الأوامر بنجاح ✓</div>
+              <div class="log-time">منذ 15 دقيقة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Toggles -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">⚙️ إعدادات سريعة</div>
+        </div>
+        <div class="panel-body">
+          <div class="toggle-item">
+            <div>
+              <div class="toggle-label">الحماية من السبام</div>
+              <div class="toggle-desc">حذف الرسائل المتكررة تلقائياً</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-item">
+            <div>
+              <div class="toggle-label">رسالة الترحيب</div>
+              <div class="toggle-desc">رحب بالأعضاء الجدد</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-item">
+            <div>
+              <div class="toggle-label">نظام التذاكر</div>
+              <div class="toggle-desc">فتح تذاكر الدعم الفني</div>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-item">
+            <div>
+              <div class="toggle-label">الموسيقى</div>
+              <div class="toggle-desc">تشغيل الموسيقى في الفويس</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="toggle-item">
+            <div>
+              <div class="toggle-label">نظام اللفلات</div>
+              <div class="toggle-desc">مكافأة الأعضاء النشطين</div>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Generate chart bars
+  const chart = document.getElementById('chart');
+  const days = ['الأحد','الإث','الثل','الأر','الخم','الجم','السب'];
+  const values = [65, 82, 54, 90, 78, 95, 70];
+  const max = Math.max(...values);
+
+  days.forEach((day, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'bar-wrap';
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = '0px';
+    bar.title = `${values[i]} أمر`;
+    const label = document.createElement('div');
+    label.className = 'bar-label';
+    label.textContent = day;
+    wrap.appendChild(bar);
+    wrap.appendChild(label);
+    chart.appendChild(wrap);
+
+    setTimeout(() => {
+      bar.style.transition = 'height 0.6s cubic-bezier(0.34,1.56,0.64,1)';
+      bar.style.height = `${(values[i] / max) * 100}px`;
+    }, i * 80 + 300);
+  });
+</script>
+</body>
+</html>
